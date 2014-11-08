@@ -435,6 +435,7 @@ public class OVRPlayerController : MonoBehaviour
 	/// </summary>
 	public void SetCameras()
 	{
+        Debug.Log(YRotation);
 		if(CameraController != null)
 		{
 			// Make sure to set the initial direction of the camera 
