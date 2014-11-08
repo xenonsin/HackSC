@@ -25,6 +25,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Controls the player's movement in virtual reality.
 /// </summary>
+
 [RequireComponent(typeof(CharacterController))]
 public class OVRPlayerController : MonoBehaviour
 {
@@ -81,10 +82,10 @@ public class OVRPlayerController : MonoBehaviour
 	/// <summary>
 	/// Modifies the strength of gravity.
 	/// </summary>
-    public float GravityModifier = 0;// = 0.379f;
+	public float GravityModifier = 0;// = 0.379f;
 
-	private float MoveScale = 1.0f;
-	private Vector3 MoveThrottle = Vector3.zero;
+	public float MoveScale = 1.0f; //= 0.8f;
+	public Vector3 MoveThrottle = Vector3.zero;
 	private float FallSpeed = 0.0f;	
 	
 	/// <summary>
@@ -96,7 +97,7 @@ public class OVRPlayerController : MonoBehaviour
 	protected OVRCameraRig CameraController = null;
 	protected Transform DirXform = null;
 
-	private float MoveScaleMultiplier = 0.8f;
+	public float MoveScaleMultiplier = 0.8f;
 	private float RotationScaleMultiplier = 1.0f;
 	private bool  SkipMouseRotation = false;
 	private bool  HaltUpdateMovement = false;
@@ -135,10 +136,20 @@ public class OVRPlayerController : MonoBehaviour
 
 	protected virtual void Update()
 	{
-        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B) && !Flying)
-            Flying = true;
-        else if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B) && Flying)
-            Flying = false;
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B))
+        {
+            if (GravityModifier <= 0.0f)
+                GravityModifier = 0.1f;
+            else
+            {
+                GravityModifier = 0.0f;
+                FallSpeed = 0.0f;
+            }
+        }
+        //Flying = true;
+        //else if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B) && Flying)
+        //    GravityModifier = 0.0f;
+        //Flying = false;
 
 		if (useProfileHeight)
 		{
@@ -152,9 +163,8 @@ public class OVRPlayerController : MonoBehaviour
 		Vector3 moveDirection = Vector3.zero;
 
 		float motorDamp = (1.0f + (Damping * SimulationRate * Time.deltaTime));
-
 		MoveThrottle.x /= motorDamp;
-		MoveThrottle.y = (MoveThrottle.y > 0.0f) ? (MoveThrottle.y / motorDamp) : MoveThrottle.y;
+        MoveThrottle.y /= motorDamp; // = (MoveThrottle.y > 0.0f) ? (MoveThrottle.y / motorDamp) : MoveThrottle.y;
 		MoveThrottle.z /= motorDamp;
 
 		moveDirection += MoveThrottle * SimulationRate * Time.deltaTime;
@@ -165,8 +175,12 @@ public class OVRPlayerController : MonoBehaviour
 		else
 			FallSpeed += ((Physics.gravity.y * (GravityModifier * 0.002f)) * SimulationRate * Time.deltaTime);
 
+        if (GravityModifier > 0.0f)
+            moveDirection.y += FallSpeed * SimulationRate * Time.deltaTime;
+        else
+        {
 
-		moveDirection.y += FallSpeed * SimulationRate * Time.deltaTime;
+        }
 
 		// Offset correction for uneven ground
 		float bumpUpOffset = 0.0f;
@@ -177,15 +191,15 @@ public class OVRPlayerController : MonoBehaviour
             moveDirection -= bumpUpOffset * Vector3.up;
 		}
 
-		Vector3 predictedXZ = Vector3.Scale((Controller.transform.localPosition + moveDirection), new Vector3(1, 0, 1));
+        //Vector3 predictedXZ = Vector3.Scale((Controller.transform.localPosition + moveDirection), new Vector3(1, 0, 1));
 
 		// Move contoller
 		Controller.Move(moveDirection);
 
-		Vector3 actualXZ = Vector3.Scale(Controller.transform.localPosition, new Vector3(1, 0, 1));
+        //Vector3 actualXZ = Vector3.Scale(Controller.transform.localPosition, new Vector3(1, 0, 1));
 
-		if (predictedXZ != actualXZ)
-			MoveThrottle += (actualXZ - predictedXZ) / (SimulationRate * Time.deltaTime);
+        //if (predictedXZ != actualXZ)
+        //    MoveThrottle += (actualXZ - predictedXZ) / (SimulationRate * Time.deltaTime);
 	}
 
 	public virtual void UpdateMovement()
@@ -212,11 +226,43 @@ public class OVRPlayerController : MonoBehaviour
 			dpad_move = true;
 		}
 
+        // Compute this for key movement
+        float moveInfluence = Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
+
+        // Run!
+        if (dpad_move || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            moveInfluence *= 2.0f;
+
+#if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
+        moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
+#endif
+
+
+
+        if (DirXform != null)
+        {
+            float leftAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftXAxis);
+            float leftAxisY = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftYAxis);
+
+
+            moveForward = (leftAxisY > 0.0f);
+
+            moveBack = (leftAxisY < 0.0f);
+    
+
+            moveLeft = (leftAxisX < 0.0f);
+
+            moveRight = (leftAxisX > 0.0f);
+
+            dpad_move = moveForward || moveBack || moveLeft || moveRight;
+
+        }
+
 		MoveScale = 1.0f;
 
-		if ( (moveForward && moveLeft) || (moveForward && moveRight) ||
-			 (moveBack && moveLeft)    || (moveBack && moveRight) )
-			MoveScale = 0.70710678f;
+        if ((moveForward && moveLeft) || (moveForward && moveRight) ||
+             (moveBack && moveLeft) || (moveBack && moveRight))
+            MoveScale = 1.0f; //= 0.70710678f;
 
 		// No positional movement if we are in the air
 //		if (!Controller.isGrounded)
@@ -224,12 +270,12 @@ public class OVRPlayerController : MonoBehaviour
 
 		MoveScale *= SimulationRate * Time.deltaTime;
 
-		// Compute this for key movement
-		float moveInfluence = Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
+        //// Compute this for key movement
+        //float moveInfluence = Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
 
-		// Run!
-		if (dpad_move || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-			moveInfluence *= 2.0f;
+        //// Run!
+        //if (dpad_move || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        //    moveInfluence *= 2.0f;
 
 		//if (!moveForward && !moveBack && !moveLeft && !moveRight) footsteps.Stop();
 
@@ -237,19 +283,23 @@ public class OVRPlayerController : MonoBehaviour
 		if (DirXform != null)
 		{
 			if (moveForward) {
-				MoveThrottle += DirXform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
+                MoveThrottle += gameObject.transform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
+                //MoveThrottle += DirXform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveBack) {
-				MoveThrottle += DirXform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
+                MoveThrottle += gameObject.transform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
+                //MoveThrottle += DirXform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveLeft) {
-				MoveThrottle += DirXform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                MoveThrottle += gameObject.transform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                //MoveThrottle += DirXform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveRight) {
-				MoveThrottle += DirXform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                MoveThrottle += gameObject.transform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                //MoveThrottle += DirXform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 
@@ -285,40 +335,53 @@ public class OVRPlayerController : MonoBehaviour
 
 		moveInfluence = SimulationRate * Time.deltaTime * Acceleration * 0.1f * MoveScale * MoveScaleMultiplier;
 
-#if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
-		moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
-#endif
+//#if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
+//        moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
+//#endif
         //Gamepad Controller, Left thumb stick
-		if(DirXform != null)
-		{
-			float leftAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftXAxis);
-			float leftAxisY = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftYAxis);
+        //if(DirXform != null)
+        //{
+        //    float leftAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftXAxis);
+        //    float leftAxisY = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftYAxis);
 
-			if(leftAxisY > 0.0f)
-	    		MoveThrottle += leftAxisY
-					* DirXform.TransformDirection(Vector3.forward * moveInfluence);
+            
+        //    if(leftAxisY > 0.0f)
+        //        MoveThrottle += gameObject.transform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
+        //        //MoveThrottle += leftAxisY
+        //        //    * transform.TransformDirection(Vector3.forward * moveInfluence);
+        //            //* DirXform.TransformDirection(Vector3.forward * moveInfluence);
 
-			if(leftAxisY < 0.0f)
-	    		MoveThrottle += Mathf.Abs(leftAxisY)
-					* DirXform.TransformDirection(Vector3.back * moveInfluence) * BackAndSideDampen;
+        //    if(leftAxisY < 0.0f)
+        //        MoveThrottle += gameObject.transform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
+        //        //MoveThrottle += Mathf.Abs(leftAxisY)
+        //        //    * transform.TransformDirection(Vector3.back * moveInfluence) * BackAndSideDampen;
+        //            //* DirXform.TransformDirection(Vector3.back * moveInfluence) * BackAndSideDampen;
 
-			if(leftAxisX < 0.0f)
-	    		MoveThrottle += Mathf.Abs(leftAxisX)
-					* DirXform.TransformDirection(Vector3.left * moveInfluence) * BackAndSideDampen;
+        //    if(leftAxisX < 0.0f)
+        //        MoveThrottle += gameObject.transform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+        //        //MoveThrottle += Mathf.Abs(leftAxisX)
+        //        //    * transform.TransformDirection(Vector3.left * moveInfluence) * BackAndSideDampen;
+        //    //*DirXform.TransformDirection(Vector3.left * moveInfluence) * BackAndSideDampen;
 
-			if(leftAxisX > 0.0f)
-				MoveThrottle += leftAxisX
-					* DirXform.TransformDirection(Vector3.right * moveInfluence) * BackAndSideDampen;
-		}
+        //    if(leftAxisX > 0.0f)
+        //        MoveThrottle += gameObject.transform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+        //        //MoveThrottle += leftAxisX
+        //        //    * transform.TransformDirection(Vector3.right * moveInfluence) * BackAndSideDampen;
+        //    //*DirXform.TransformDirection(Vector3.right * moveInfluence) * BackAndSideDampen;
+        //}
 
         //Rotation
 		float rightAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightXAxis);
         float rightAxisY = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightYAxis);
-		YRotation += rightAxisX * rotateInfluence; 
+        if (transform.eulerAngles.z <= 180.1f && transform.eulerAngles.z >= 179.9f)
+            YRotation -= rightAxisX * rotateInfluence;
+        else
+            YRotation += rightAxisX * rotateInfluence;
         XRotation -= rightAxisY * rotateInfluence; //Non-inverted
       
-        DirXform.rotation = Quaternion.Euler(XRotation, YRotation, 0.0f);
-		transform.rotation = DirXform.rotation;
+        //DirXform.rotation = Quaternion.Euler(XRotation, YRotation, 0.0f);
+        //transform.rotation = DirXform.rotation;
+        transform.rotation = Quaternion.Euler(XRotation, YRotation, 0.0f);
 
 		if (HmdRotatesY)
 		{
