@@ -63,6 +63,11 @@ public class OVRPlayerController : MonoBehaviour
 	/// </summary>
 	private float YRotation = 0.0f;
 
+    /// <summary>
+    /// The player's current rotation about the X axis.
+    /// </summary>
+    private float XRotation = 0.0f;
+
 	/// <summary>
 	/// If true, tracking data from a child OVRCameraRig will update the direction of movement.
 	/// </summary>
@@ -217,6 +222,7 @@ public class OVRPlayerController : MonoBehaviour
 
 		//if (!moveForward && !moveBack && !moveLeft && !moveRight) footsteps.Stop();
 
+        //Keyboard Controller
 		if (DirXform != null)
 		{
 			if (moveForward) {
@@ -271,7 +277,7 @@ public class OVRPlayerController : MonoBehaviour
 #if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
 		moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
 #endif
-
+        //Gamepad Controller, Left thumb stick
 		if(DirXform != null)
 		{
 			float leftAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftXAxis);
@@ -294,11 +300,13 @@ public class OVRPlayerController : MonoBehaviour
 					* DirXform.TransformDirection(Vector3.right * moveInfluence) * BackAndSideDampen;
 		}
 
+        //Rotation
 		float rightAxisX = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightXAxis);
-
-		YRotation += rightAxisX * rotateInfluence;
-
-        DirXform.rotation = Quaternion.Euler(0.0f, YRotation, 0.0f);
+        float rightAxisY = OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightYAxis);
+		YRotation += rightAxisX * rotateInfluence; 
+        XRotation -= rightAxisY * rotateInfluence; //Non-inverted
+      
+        DirXform.rotation = Quaternion.Euler(XRotation, YRotation, 0.0f);
 		transform.rotation = DirXform.rotation;
 
 		if (HmdRotatesY)
