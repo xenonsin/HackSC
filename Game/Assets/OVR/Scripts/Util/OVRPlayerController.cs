@@ -139,7 +139,7 @@ public class OVRPlayerController : MonoBehaviour
         if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B))
         {
             if (GravityModifier <= 0.0f)
-                GravityModifier = 0.1f;
+                GravityModifier = 0.379f;
             else
             {
                 GravityModifier = 0.0f;
@@ -235,6 +235,9 @@ public class OVRPlayerController : MonoBehaviour
 
 #if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
         moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
+
+        if (OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightTrigger) > 0f)
+            Debug.Log("FUUCK");
 #endif
 
 
@@ -327,6 +330,8 @@ public class OVRPlayerController : MonoBehaviour
 			YRotation += RotationRatchet;
 
 		if (Input.GetKey (KeyCode.Space) && Controller.isGrounded) MoveThrottle += new Vector3(0, JumpForce, 0);
+
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.A)) Jump();
 
 		float rotateInfluence = SimulationRate * Time.deltaTime * RotationAmount * RotationScaleMultiplier;
 
