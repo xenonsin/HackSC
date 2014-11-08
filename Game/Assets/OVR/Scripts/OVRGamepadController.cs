@@ -156,7 +156,7 @@ public class OVRGamepadController : MonoBehaviour
     void Update()
     {
 		GPC_Available = GPC_Update();
-		// GPC_Test();
+		//GPC_Test();
     }
 
 	void OnDestroy()
