@@ -63,6 +63,7 @@ public class OVRPlayerControllerEditor : Editor
 			m_Component.RotationRatchet   = EditorGUILayout.Slider("Rotation Ratchet", 		m_Component.RotationRatchet,  0, 180);
 			m_Component.GravityModifier   = EditorGUILayout.Slider("Gravity Modifier", 		m_Component.GravityModifier,  0, 1);
 			m_Component.HmdRotatesY       = EditorGUILayout.Toggle("Hmd Rotates Y", 		m_Component.HmdRotatesY);
+           // m_Component.Flying            = EditorGUILayout.Toggle("Flying",                m_Component.HmdRotatesY);
 		}
 		
 		if (GUI.changed)

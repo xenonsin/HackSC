@@ -73,10 +73,15 @@ public class OVRPlayerController : MonoBehaviour
 	/// </summary>
 	public bool HmdRotatesY = true;
 
+    /// <summary>
+    /// If true, suspends gravity and activates y rotation on controller?
+    /// </summary>
+    public bool Flying = false;
+
 	/// <summary>
 	/// Modifies the strength of gravity.
 	/// </summary>
-	public float GravityModifier = 0.379f;
+    public float GravityModifier = 0;// = 0.379f;
 
 	private float MoveScale = 1.0f;
 	private Vector3 MoveThrottle = Vector3.zero;
@@ -130,6 +135,11 @@ public class OVRPlayerController : MonoBehaviour
 
 	protected virtual void Update()
 	{
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B) && !Flying)
+            Flying = true;
+        else if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B) && Flying)
+            Flying = false;
+
 		if (useProfileHeight)
 		{
 			var p = CameraController.transform.localPosition;
@@ -155,6 +165,7 @@ public class OVRPlayerController : MonoBehaviour
 		else
 			FallSpeed += ((Physics.gravity.y * (GravityModifier * 0.002f)) * SimulationRate * Time.deltaTime);
 
+
 		moveDirection.y += FallSpeed * SimulationRate * Time.deltaTime;
 
 		// Offset correction for uneven ground
@@ -163,7 +174,7 @@ public class OVRPlayerController : MonoBehaviour
 		if (Controller.isGrounded && MoveThrottle.y <= 0.001f)
 		{
 			bumpUpOffset = Mathf.Max(Controller.stepOffset, new Vector3(moveDirection.x, 0, moveDirection.z).magnitude);
-			moveDirection -= bumpUpOffset * Vector3.up;
+            moveDirection -= bumpUpOffset * Vector3.up;
 		}
 
 		Vector3 predictedXZ = Vector3.Scale((Controller.transform.localPosition + moveDirection), new Vector3(1, 0, 1));
