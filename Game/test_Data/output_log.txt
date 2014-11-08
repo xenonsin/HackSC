@@ -14,7 +14,7 @@ Platform assembly: C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\Assembl
 Loading C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
 Platform assembly: C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\Assembly-UnityScript-firstpass.dll (this message is harmless)
 Loading C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\Assembly-UnityScript-firstpass.dll into Unity Child Domain
-- Completed reload, in  0.046 seconds
+- Completed reload, in  0.041 seconds
 <RI> Initializing input.
 <RI> Input initialized.
 desktop: 1600x900 60Hz; virtual: 1600x900 at 0,0
