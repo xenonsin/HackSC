@@ -5,6 +5,9 @@ public class ShootingLasers : MonoBehaviour {
     LineRenderer line;
 
     public float LaserDistance = 10;
+    public float LaserCoolDown = 1.5f;
+
+    private bool CanShoot = true;
 
     void Start() 
     {
@@ -18,8 +21,9 @@ public class ShootingLasers : MonoBehaviour {
 
         Debug.DrawRay(transform.position, transform.forward * 50, Color.red);
 
-        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.R1))
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.R1) && CanShoot)
         {
+            CanShoot = false;
             line.enabled = true;
             if (Physics.Raycast(ray, out hit, LaserDistance))
             {
@@ -28,26 +32,15 @@ public class ShootingLasers : MonoBehaviour {
             }
             else
                 line.SetPosition(1, new Vector3(0, 0, 300));
+
+            StartCoroutine("CoolDown");
         }
-        else
-            line.enabled = false;
     }
-    IEnumerator FireLaser()
+    IEnumerator CoolDown()
     {
-        line.enabled = true;
-
-        while (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.R1))
-        {
-
-            //line.SetPosition(0, ray.origin);
-
-
-            transform.position += transform.forward * 10 * Time.deltaTime;
-
-
-            yield return null;
-        }
-
+        yield return new WaitForSeconds(0.7f);
         line.enabled = false;
+        yield return new WaitForSeconds(LaserCoolDown);
+        CanShoot = true;
     }
 }
