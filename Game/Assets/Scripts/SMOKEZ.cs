@@ -45,7 +45,7 @@ public class SMOKEZ : MonoBehaviour {
         what = false;
         if (smokes)
             smokes.SetActive(true);
-        yield return new WaitForSeconds(20f);
+        yield return new WaitForSeconds(30f);
         //smokes.SetActive(false);
         gameObject.SetActive(false);
     }
