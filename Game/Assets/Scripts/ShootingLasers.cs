@@ -4,7 +4,7 @@ using System.Collections;
 public class ShootingLasers : MonoBehaviour {
     LineRenderer line;
 
-    public float LaserDistance = 10;
+    public float LaserDistance = 100;
     public float LaserCoolDown = 1.5f;
 
     private bool CanShoot = true;
@@ -28,7 +28,32 @@ public class ShootingLasers : MonoBehaviour {
             if (Physics.Raycast(ray, out hit, LaserDistance))
             {
                 line.SetPosition(1, new Vector3(0, 0, hit.distance));
-                print("There is something in front of the object!");
+                //print("There is something in front of the object!");
+                MeshCollider mc = hit.collider.gameObject.GetComponent<MeshCollider>();
+                BoxCollider bc = hit.collider.gameObject.GetComponent<BoxCollider>();
+                //Vector3 paramss = mc.bounds.size;
+                //Debug.Log(hit.collider.gameObject.GetComponent<MeshCollider>().bounds.size);
+                
+                DST_Source dst = hit.collider.gameObject.GetComponent<DST_Source>();
+                if (dst)
+                  dst.BeginDestructionSequence();
+
+                SMOKEZ smo = hit.collider.gameObject.GetComponent<SMOKEZ>();
+                if (smo)
+                    smo.SuchIsLife();
+                //source.MoveTo(paramss.x, paramss.y, paramss.z, hit.transform);
+                //MeshRenderer mr = hit.collider.gameObject.GetComponent<MeshRenderer>();
+                //if (mr)
+                //    mr.enabled = false;
+                if (mc)
+                {
+                    if(!mc.gameObject.name.Contains("lane"))
+                    mc.enabled = false;
+                }
+                if (bc)
+                {
+                    bc.enabled = false;
+                }
             }
             else
                 line.SetPosition(1, new Vector3(0, 0, 300));

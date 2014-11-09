@@ -12,7 +12,7 @@ public class AutoDelete : MonoBehaviour {
 	void Update () {
         if (currentPos != transform.position)
         {
-            StartCoroutine(AutoDeleteSelf(Random.Range(15.0f, 150.0f) * (Random.Range(0.0f, 2.0f) / 2.0f)));
+            StartCoroutine(AutoDeleteSelf(Random.Range(30.0f, 250.0f) * (Random.Range(0.0f, 2.0f) / 2.0f)));
         }
 	}
 

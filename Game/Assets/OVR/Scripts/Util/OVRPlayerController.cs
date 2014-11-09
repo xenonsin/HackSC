@@ -231,6 +231,9 @@ public class OVRPlayerController : MonoBehaviour
 
         // Run!
         if (dpad_move || Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            moveInfluence *= 1.5f;
+
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.L1))
             moveInfluence *= 2.0f;
 
 #if !UNITY_ANDROID // LeftTrigger not avail on Android game pad

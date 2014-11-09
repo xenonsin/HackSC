@@ -3,40 +3,47 @@ using System.Collections;
 
 public class DST_Source : MonoBehaviour {
 
-    public int Width, Length, Height;
-    private DST masterDST = null;
     private bool destroyed = false;
+    private AutoDelete[] components;
 
 	
 	void Start () {
-        masterDST = FindObjectOfType<DST>();
+        components = GetComponentsInChildren<AutoDelete>();
+        for (int i = 0; i < components.Length; i++)
+        {
+            if (components[i].rigidbody != null)
+            {
+                components[i].rigidbody.isKinematic = true;
+                components[i].rigidbody.useGravity = false;
+            }
+        }
 	}
 
     public void BeginDestructionSequence()
     {
-        if (masterDST != null)
+        components = GetComponentsInChildren<AutoDelete>();
+        for (int i = 0; i < components.Length; i++)
         {
-            masterDST.MoveTo(transform.position, Width, Length, Height, transform);
-        }
-    }
-	
-	
-	void Update () {
-        if(!destroyed)
-        {
-            if (Input.GetKey("space"))
+            if (components[i].rigidbody != null)
             {
-                BeginDestructionSequence();
-                destroyed = true;
+                components[i].rigidbody.isKinematic = false;
+                components[i].rigidbody.useGravity = true;
             }
         }
-	    // Check for collisions
-        // Fire BeginDestructionSequence() when desired
-	}
+        ApplyPhysics();
+    }
 
-    void OnTriggerEnter(Collider other)
+    private void ApplyPhysics()
     {
-        if (other.gameObject.name.Contains("Player"))
-            BeginDestructionSequence();
+        for (int i = 0; i < components.Length; i++)
+        {
+            if (components[i] != null)
+            {
+                if (components[i].rigidbody != null)
+                {
+                    components[i].rigidbody.AddForce(Random.Range(-1000.0f, 1000.0f), Random.Range(-1000.0f, 1000.0f), Random.Range(-1000.0f, 1000.0f));
+                }
+            }
+        }
     }
 }
