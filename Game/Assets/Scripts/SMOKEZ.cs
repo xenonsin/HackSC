@@ -6,11 +6,21 @@ public class SMOKEZ : MonoBehaviour {
     private bool timeToDie = false;
     private bool what = true;
     public GameObject smokes;
-    public float collapseSpeed = 2f;
+    public float collapseSpeed = 4f;
     public float umSpeed = 2f;
+    private AudioSource source;
 
 	// Use this for initialization
 	void Start () {
+        source = GetComponent<AudioSource>();
+        if (source == null)
+            source = gameObject.AddComponent<AudioSource>();
+        if (source != null)
+        {
+            source.playOnAwake = false;
+            source.rolloffMode = AudioRolloffMode.Linear;
+            source.spread = 500.0f;
+        }
         //ParticleRenderer[] t = GetComponentsInChildren<ParticleRenderer>();
         //for (int i = 0; i < t.Length; i++)
         //{
@@ -37,6 +47,7 @@ public class SMOKEZ : MonoBehaviour {
     public void SuchIsLife()
     {
         timeToDie = true;
+        PlaySound();
     }
 
     IEnumerator SlowDeath()
@@ -48,5 +59,14 @@ public class SMOKEZ : MonoBehaviour {
         yield return new WaitForSeconds(30f);
         //smokes.SetActive(false);
         gameObject.SetActive(false);
+    }
+
+    private void PlaySound()
+    {
+        if (TrackHolder.Instance != null)
+        {
+            source.clip = TrackHolder.Instance.collapse;
+            source.Play();
+        }
     }
 }

@@ -8,10 +8,20 @@ public class ShootingLasers : MonoBehaviour {
     public float LaserCoolDown = 1.5f;
 
     private bool CanShoot = true;
+    private AudioSource source;
 
     void Start() 
     {
         line = gameObject.GetComponent<LineRenderer>();
+        source = gameObject.GetComponent<AudioSource>();
+        if (source == null)
+            source = gameObject.AddComponent<AudioSource>();
+        if (source != null)
+        {
+            source.playOnAwake = false;
+            source.rolloffMode = AudioRolloffMode.Linear;
+            source.spread = 500.0f;
+        }
         line.enabled = false;
     }
     void Update()
@@ -23,6 +33,7 @@ public class ShootingLasers : MonoBehaviour {
 
         if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.R1) && CanShoot)
         {
+            PlaySound();
             CanShoot = false;
             line.enabled = true;
             if (Physics.Raycast(ray, out hit, LaserDistance))
@@ -67,5 +78,14 @@ public class ShootingLasers : MonoBehaviour {
         line.enabled = false;
         yield return new WaitForSeconds(LaserCoolDown);
         CanShoot = true;
+    }
+
+    private void PlaySound()
+    {
+        if (TrackHolder.Instance != null)
+        {
+            source.clip = TrackHolder.Instance.laser;
+            source.Play();
+        }
     }
 }

@@ -20,7 +20,10 @@ Loading C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\Assembly-UnityScri
 desktop: 1600x900 60Hz; virtual: 1600x900 at 0,0
 Platform assembly: C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\System.Core.dll (this message is harmless)
 WARNING: Shader Unsupported: 'su_Double_Clip' - Pass 'FORWARD' shader state not supported
-WARNING: Shader Unsupported: 'su_VertexCol_1UV_Single' - Pass 'FORWARD' shader state not supported
+The referenced script on this Behaviour is missing!
+ 
+(Filename:  Line: 1783)
+
 Platform assembly: C:\Users\Hacker\Desktop\HackSC\Game\test_Data\Managed\System.dll (this message is harmless)
 Actor::updateMassFromShapes: Compute mesh inertia tensor failed for one of the actor's mesh shapes! Please change mesh geometry or supply a tensor manually!
  
@@ -13302,83 +13305,8 @@ Actor::updateMassFromShapes: Compute mesh inertia tensor failed for one of the a
  
 (Filename: ..\..\Physics\src\NpActor.cpp Line: 134)
 
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
+Internal error: Too many pairs created, new pairs will be ignored. This is perhaps due to an excessive number of objects created at one location.: 
 
-allocated cube of index 1 is now active
  
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 0 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
-
-allocated cube of index 1 is now active
- 
-(Filename: C:/BuildAgent/work/d63dfc6385190b60/artifacts/StandalonePlayerGenerated/UnityEngineDebug.cpp Line: 49)
+(Filename: ..\..\Physics\src\NpPhysicsSDK.cpp Line: 192)
 

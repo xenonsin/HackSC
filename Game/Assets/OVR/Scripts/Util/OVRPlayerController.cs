@@ -104,9 +104,26 @@ public class OVRPlayerController : MonoBehaviour
 	private bool prevHatLeft = false;
 	private bool prevHatRight = false;
 	private float SimulationRate = 60f;
+    private AudioSource source;
+    private Vector3 oldPos;
 
+    void Start()
+    {
+        source = gameObject.GetComponent<AudioSource>();
+        if (source == null)
+            source = gameObject.AddComponent<AudioSource>();
+        if (TrackHolder.Instance != null)
+        {
+            source.clip = TrackHolder.Instance.wind;
+            source.playOnAwake = false;
+            source.rolloffMode = AudioRolloffMode.Linear;
+            source.spread = 500.0f;
+            source.Play();
+        }
+    }
 	void Awake()
 	{
+        gameObject.transform.Rotate(0, 150, 0);
 		Controller = gameObject.GetComponent<CharacterController>();
 
 		if(Controller == null)
@@ -136,6 +153,12 @@ public class OVRPlayerController : MonoBehaviour
 
 	protected virtual void Update()
 	{
+
+        if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.Start))
+        {
+            Application.LoadLevel("main_menu");
+        }
+
         if (OVRGamepadController.GPC_GetButton(OVRGamepadController.Button.B))
         {
             if (GravityModifier <= 0.0f)
@@ -168,6 +191,10 @@ public class OVRPlayerController : MonoBehaviour
 		MoveThrottle.z /= motorDamp;
 
 		moveDirection += MoveThrottle * SimulationRate * Time.deltaTime;
+            if (moveDirection.x > 0.0f || moveDirection.y > 0.0f || moveDirection.z > 0.0f)
+                source.volume = 1.0f;
+            else
+                source.volume = 0.5f;
 
 		// Gravity
 		if (Controller.isGrounded && FallSpeed <= 0)
@@ -239,8 +266,8 @@ public class OVRPlayerController : MonoBehaviour
 #if !UNITY_ANDROID // LeftTrigger not avail on Android game pad
         moveInfluence *= 1.0f + OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.LeftTrigger);
 
-        if (OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightTrigger) > 0f)
-            Debug.Log("FUUCK");
+        //if (OVRGamepadController.GPC_GetAxis(OVRGamepadController.Axis.RightTrigger) > 0f)
+        //    Debug.Log("FUUCK");
 #endif
 
 
@@ -286,25 +313,30 @@ public class OVRPlayerController : MonoBehaviour
 		//if (!moveForward && !moveBack && !moveLeft && !moveRight) footsteps.Stop();
 
         //Keyboard Controller
+        source.volume = 0.5f;
 		if (DirXform != null)
 		{
 			if (moveForward) {
                 MoveThrottle += gameObject.transform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
+                source.volume = 0.8f;
                 //MoveThrottle += DirXform.TransformDirection(Vector3.forward * moveInfluence * transform.lossyScale.z);
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveBack) {
                 MoveThrottle += gameObject.transform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
+                source.volume = 0.8f;
                 //MoveThrottle += DirXform.TransformDirection(Vector3.back * moveInfluence * transform.lossyScale.z) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveLeft) {
                 MoveThrottle += gameObject.transform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                source.volume = 0.8f;
                 //MoveThrottle += DirXform.TransformDirection(Vector3.left * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
 			if (moveRight) {
                 MoveThrottle += gameObject.transform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
+                source.volume = 0.8f;
                 //MoveThrottle += DirXform.TransformDirection(Vector3.right * moveInfluence * transform.lossyScale.x) * BackAndSideDampen;
 				//if(!footsteps.isPlaying) footsteps.Play ();
 			}
