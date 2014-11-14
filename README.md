@@ -14,5 +14,5 @@ Youtube Demo Video: https://www.youtube.com/watch?v=U2QYGiBcpVA
 <br>ChallengePost: http://challengepost.com/software/furfante-oculus-rift-demo
 
 ***Other Team Members***
-<br> Keno San Pablo (programmer)
+<br> Nate McDorman (programmer)
 <br> Gemma Busoni (graphics)
